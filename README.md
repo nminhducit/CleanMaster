@@ -10,7 +10,7 @@
 7. [License](#license)
 
 ## Introduction
-**CleanMaster by NMINHDUCIT** is a batch script utility designed to help you clean up unnecessary files from your Windows PC, freeing up disk space and improving system performance. 
+**CleanMaster Tools** is a batch script utility designed to help you clean up unnecessary files from your Windows PC, freeing up disk space and improving system performance. 
 
 This tool offers options to delete internet cookies, temporary internet files, perform disk cleanup, and defragment your hard drives.
 
