@@ -1,9 +1,14 @@
 @echo off
 title CleanMaster by NMINHDUCIT
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Requesting administrative privileges...
+    powershell -Command "Start-Process cmd -ArgumentList '/c %~s0 %*' -Verb RunAs"
+    exit /b
+)
+mode con: cols=80 lines=20
 @echo off
 echo This is a cleanup script.
-signtool sign /a /t http://timestamp.digicert.com /f "1545454.pfx" /p "test" main.bat
-
 :menu
 cls
 echo --------------------------------------------------------------------------------
