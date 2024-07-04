@@ -40,7 +40,7 @@ This tool offers options to delete internet cookies, temporary internet files, p
 3. Enter the number corresponding to the task you want to perform and press **Enter**.
 
 ### Screenshots
-![screenshot](https://path_to_screenshot_image)
+![CleanMaster Tools](https://i.imgur.com/FQV3L74.jpeg)
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on [GitHub](https://github.com/NMINHDUCIT/CleanMaster).
