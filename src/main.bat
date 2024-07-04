@@ -106,6 +106,14 @@ if exist "%user_temp%" (
     echo Deleting files in %user_temp%...
     rd /s /q "%user_temp%" >nul 2>&1
 )
+
+echo Deleting Log files...
+del /f /s /q %windir%\Logs\* >nul 2>&1
+del /f /s /q %windir%\System32\LogFiles\* >nul 2>&1
+
+echo Clearing Event Logs...
+for /f "tokens=*" %%a in ('wevtutil el') do wevtutil cl "%%a" >nul 2>&1
+
 cls
 echo
 --------------------------------------------------------------------------------
