@@ -1,4 +1,4 @@
-# CleanMaster by NMINHDUCIT
+# CleanMaster Tools
 
 ## Table of Contents
 1. [Introduction](#introduction)
