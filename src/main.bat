@@ -1,10 +1,13 @@
 @echo off
-title PC Cleanup Utility by NMINHDUCIT
+title CleanMaster by NMINHDUCIT
+@echo off
+echo This is a cleanup script.
+signtool sign /a /t http://timestamp.digicert.com /f "1545454.pfx" /p "test" main.bat
 
 :menu
 cls
 echo --------------------------------------------------------------------------------
-echo PC Cleanup Utility
+echo                            CleanMaster - Version 1.0
 echo --------------------------------------------------------------------------------
 echo.
 echo Select a tool
@@ -192,6 +195,6 @@ goto menu
 
 :exit
 cls
-echo Thanks for using PC Cleanup Utility by NMINHDUCIT
+echo Thanks for using CleanMaster by NMINHDUCIT
 timeout /t 3 >nul
 exit
