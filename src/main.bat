@@ -80,6 +80,13 @@ if exist "%temp%" del /f /q "%temp%\*.*" 2>nul
 if exist "%tmp%" del /f /q "%tmp%\*.*" 2>nul
 for /D %%G in ("%temp%\*") do rd /s /q "%%G" 2>nul
 for /D %%G in ("%tmp%\*") do rd /s /q "%%G" 2>nul
+if exist "C:\Windows\SoftwareDistribution" (
+    echo Deleting files in C:\Windows\SoftwareDistribution...
+    takeown /F "C:\Windows\SoftwareDistribution" /R /D Y >nul
+    icacls "C:\Windows\SoftwareDistribution" /grant administrators:F /T >nul
+    rd /s /q "C:\Windows\SoftwareDistribution"
+    mkdir "C:\Windows\SoftwareDistribution"
+)
 cls
 echo --------------------------------------------------------------------------------
 echo Disk Cleanup
