@@ -71,15 +71,31 @@ echo Disk Cleanup
 echo --------------------------------------------------------------------------------
 echo.
 echo Running Disk Cleanup...
-ping localhost -n 3 >nul
-if exist "C:\WINDOWS\temp" del /f /q "C:\WINDOWS\temp\*.*" 2>nul
-if exist "C:\WINDOWS\tmp" del /f /q "C:\WINDOWS\tmp\*.*" 2>nul
-if exist "C:\tmp" del /f /q "C:\tmp\*.*" 2>nul
-if exist "C:\temp" del /f /q "C:\temp\*.*" 2>nul
-if exist "%temp%" del /f /q "%temp%\*.*" 2>nul
-if exist "%tmp%" del /f /q "%tmp%\*.*" 2>nul
-for /D %%G in ("%temp%\*") do rd /s /q "%%G" 2>nul
-for /D %%G in ("%tmp%\*") do rd /s /q "%%G" 2>nul
+timeout /t 3 >nul
+
+:: Cleanup actions
+echo Deleting temporary files...
+if exist "C:\WINDOWS\temp" (
+    del /f /q "C:\WINDOWS\temp\*.*" >nul 2>&1
+)
+if exist "C:\WINDOWS\tmp" (
+    del /f /q "C:\WINDOWS\tmp\*.*" >nul 2>&1
+)
+if exist "C:\tmp" (
+    del /f /q "C:\tmp\*.*" >nul 2>&1
+)
+if exist "C:\temp" (
+    del /f /q "C:\temp\*.*" >nul 2>&1
+)
+if exist "%temp%" (
+    del /f /q "%temp%\*.*" >nul 2>&1
+)
+for /D %%G in ("%temp%\*") do (
+    rd /s /q "%%G" >nul 2>&1
+)
+for /D %%G in ("%tmp%\*") do (
+    rd /s /q "%%G" >nul 2>&1
+)
 if exist "C:\Windows\SoftwareDistribution" (
     echo Deleting files in C:\Windows\SoftwareDistribution...
     takeown /F "C:\Windows\SoftwareDistribution" /R /D Y >nul
@@ -107,16 +123,40 @@ if exist "%user_temp%" (
     rd /s /q "%user_temp%" >nul 2>&1
 )
 
-echo Deleting Log files...
-del /f /s /q %windir%\Logs\* >nul 2>&1
-del /f /s /q %windir%\System32\LogFiles\* >nul 2>&1
+:: New Cleanup Areas
+echo.
+echo Do you want to delete Recycle Bin, Log files, and Event logs? (y/n)
+set /p answer=Choice: 
+if /i "%answer%"=="y" (
+    echo Emptying Recycle Bin...
+    rd /s /q %systemdrive%\$Recycle.Bin >nul 2>&1
 
-echo Clearing Event Logs...
-for /f "tokens=*" %%a in ('wevtutil el') do wevtutil cl "%%a" >nul 2>&1
+    echo Deleting Windows Update Cache...
+    rd /s /q %windir%\SoftwareDistribution\Download >nul 2>&1
+
+    echo Deleting Windows Error Reporting files...
+    rd /s /q %LOCALAPPDATA%\CrashDumps >nul 2>&1
+    rd /s /q %LOCALAPPDATA%\Microsoft\Windows\WER\ReportQueue >nul 2>&1
+    rd /s /q %LOCALAPPDATA%\Microsoft\Windows\WER\ReportArchive >nul 2>&1
+    rd /s /q %LOCALAPPDATA%\Microsoft\Windows\WER\Temp >nul 2>&1
+
+    echo Deleting Log files...
+    del /f /s /q %windir%\Logs\* >nul 2>&1
+    del /f /s /q %windir%\System32\LogFiles\* >nul 2>&1
+
+    echo Clearing Event Logs...
+    for /f "tokens=*" %%a in ('wevtutil el') do wevtutil cl "%%a" >nul 2>&1
+
+    echo Deleting User Temp Internet Files...
+    for /D %%d in (%systemdrive%\Users\*) do (
+        if exist "%%d\AppData\Local\Microsoft\Windows\INetCache" (
+            rd /s /q "%%d\AppData\Local\Microsoft\Windows\INetCache" >nul 2>&1
+        )
+    )
+)
 
 cls
-echo
---------------------------------------------------------------------------------
+echo --------------------------------------------------------------------------------
 echo Disk Cleanup
 echo --------------------------------------------------------------------------------
 echo.
@@ -132,7 +172,7 @@ echo Disk Defragment
 echo --------------------------------------------------------------------------------
 echo.
 echo Defragmenting hard disks...
-ping localhost -n 3 >nul
+timeout /t 3 >nul
 defrag -c -v
 cls
 echo --------------------------------------------------------------------------------
@@ -147,11 +187,11 @@ goto menu
 :error
 cls
 echo Command not recognized.
-ping localhost -n 4 >nul
+timeout /t 4 >nul
 goto menu
 
 :exit
 cls
-echo Thanks for using PC Cleanup Utility by NMINHDUCIT Github
-ping localhost -n 3 >nul
+echo Thanks for using PC Cleanup Utility by NMINHDUCIT
+timeout /t 3 >nul
 exit
