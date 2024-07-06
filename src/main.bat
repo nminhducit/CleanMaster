@@ -1,5 +1,5 @@
 @echo off
-title CleanMaster by NMINHDUCIT
+title CleanMaster_v0.0.1
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo Requesting administrative privileges...
@@ -12,7 +12,7 @@ echo This is a cleanup script.
 :menu
 cls
 echo --------------------------------------------------------------------------------
-echo                            CleanMaster - Version 1.0
+echo                            CleanMaster - Version 0.0.1
 echo --------------------------------------------------------------------------------
 echo.
 echo Select a tool
@@ -200,6 +200,6 @@ goto menu
 
 :exit
 cls
-echo Thanks for using CleanMaster by NMINHDUCIT
+echo Thanks for using CleanMaster by @nminhducit
 timeout /t 3 >nul
 exit
