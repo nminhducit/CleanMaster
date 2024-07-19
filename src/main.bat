@@ -201,5 +201,6 @@ goto menu
 :exit
 cls
 echo Thanks for using CleanMaster by @nminhducit
-timeout /t 3 >nul
+pause
+endlocal
 exit
