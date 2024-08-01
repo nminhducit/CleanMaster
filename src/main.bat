@@ -7,6 +7,7 @@ if %errorlevel% neq 0 (
     exit /b
 )
 mode con: cols=80 lines=20
+color f0
 @echo off
 echo This is a cleanup script.
 :menu
