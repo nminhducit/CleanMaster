@@ -1,5 +1,5 @@
 @echo off
-title CleanMaster_v0.0.1
+title CleanMaster_v0.1.0
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo Requesting administrative privileges...
@@ -10,10 +10,11 @@ mode con: cols=80 lines=20
 color f0
 @echo off
 echo This is a cleanup script.
+
 :menu
 cls
 echo --------------------------------------------------------------------------------
-echo                            CleanMaster - Version 0.0.1
+echo                            CleanMaster - Version 0.1.0
 echo --------------------------------------------------------------------------------
 echo.
 echo Select a tool
@@ -26,11 +27,11 @@ echo [4] Disk Defragment
 echo [5] Exit
 echo.
 set /p op=Run: 
-if %op%==1 goto delete_cookies
-if %op%==2 goto delete_temp_files
-if %op%==3 goto disk_cleanup
-if %op%==4 goto disk_defrag
-if %op%==5 goto exit
+if "%op%"=="1" goto delete_cookies
+if "%op%"=="2" goto delete_temp_files
+if "%op%"=="3" goto disk_cleanup
+if "%op%"=="4" goto disk_defrag
+if "%op%"=="5" goto exit
 goto error
 
 :delete_cookies
@@ -42,6 +43,10 @@ echo.
 echo Deleting Cookies...
 ping localhost -n 3 >nul
 RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 2
+if %errorlevel% neq 0 (
+    echo Error deleting cookies.
+    goto error
+)
 cls
 echo --------------------------------------------------------------------------------
 echo Delete Internet Cookies
@@ -62,6 +67,10 @@ echo.
 echo Deleting Temporary Internet Files...
 ping localhost -n 3 >nul
 RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 8
+if %errorlevel% neq 0 (
+    echo Error deleting temporary internet files.
+    goto error
+)
 cls
 echo --------------------------------------------------------------------------------
 echo Delete Temporary Internet Files
@@ -84,52 +93,40 @@ timeout /t 3 >nul
 
 :: Cleanup actions
 echo Deleting temporary files...
-if exist "C:\WINDOWS\temp" (
+(
     del /f /q "C:\WINDOWS\temp\*.*" >nul 2>&1
-)
-if exist "C:\WINDOWS\tmp" (
     del /f /q "C:\WINDOWS\tmp\*.*" >nul 2>&1
-)
-if exist "C:\tmp" (
     del /f /q "C:\tmp\*.*" >nul 2>&1
-)
-if exist "C:\temp" (
     del /f /q "C:\temp\*.*" >nul 2>&1
-)
-if exist "%temp%" (
     del /f /q "%temp%\*.*" >nul 2>&1
-)
-for /D %%G in ("%temp%\*") do (
-    rd /s /q "%%G" >nul 2>&1
-)
-for /D %%G in ("%tmp%\*") do (
-    rd /s /q "%%G" >nul 2>&1
-)
-if exist "C:\Windows\SoftwareDistribution" (
-    echo Deleting files in C:\Windows\SoftwareDistribution...
-    takeown /F "C:\Windows\SoftwareDistribution" /R /D Y >nul
-    icacls "C:\Windows\SoftwareDistribution" /grant administrators:F /T >nul
-    rd /s /q "C:\Windows\SoftwareDistribution"
-    mkdir "C:\Windows\SoftwareDistribution"
-)
-if exist "C:\Windows\Prefetch" (
-    echo Deleting files in C:\Windows\Prefetch...
-    takeown /F "C:\Windows\Prefetch" /R /D Y >nul
-    icacls "C:\Windows\Prefetch" /grant administrators:F /T >nul
-    rd /s /q "C:\Windows\Prefetch"
-    mkdir "C:\Windows\Prefetch"
-)
-if exist "C:\Windows\Temp" (
-    echo Deleting files in C:\Windows\Temp...
-    takeown /F "C:\Windows\Temp" /R /D Y >nul
-    icacls "C:\Windows\Temp" /grant administrators:F /T >nul
-    rd /s /q "C:\Windows\Temp"
-    mkdir "C:\Windows\Temp"
-)
-set "user_temp=C:\Users\%USERNAME%\AppData\Local\Temp"
-if exist "%user_temp%" (
-    echo Deleting files in %user_temp%...
-    rd /s /q "%user_temp%" >nul 2>&1
+    for /D %%G in ("%temp%\*") do rd /s /q "%%G" >nul 2>&1
+    for /D %%G in ("%tmp%\*") do rd /s /q "%%G" >nul 2>&1
+    if exist "C:\Windows\SoftwareDistribution" (
+        echo Deleting files in C:\Windows\SoftwareDistribution...
+        takeown /F "C:\Windows\SoftwareDistribution" /R /D Y >nul
+        icacls "C:\Windows\SoftwareDistribution" /grant administrators:F /T >nul
+        rd /s /q "C:\Windows\SoftwareDistribution"
+        mkdir "C:\Windows\SoftwareDistribution"
+    )
+    if exist "C:\Windows\Prefetch" (
+        echo Deleting files in C:\Windows\Prefetch...
+        takeown /F "C:\Windows\Prefetch" /R /D Y >nul
+        icacls "C:\Windows\Prefetch" /grant administrators:F /T >nul
+        rd /s /q "C:\Windows\Prefetch"
+        mkdir "C:\Windows\Prefetch"
+    )
+    if exist "C:\Windows\Temp" (
+        echo Deleting files in C:\Windows\Temp...
+        takeown /F "C:\Windows\Temp" /R /D Y >nul
+        icacls "C:\Windows\Temp" /grant administrators:F /T >nul
+        rd /s /q "C:\Windows\Temp"
+        mkdir "C:\Windows\Temp"
+    )
+    set "user_temp=C:\Users\%USERNAME%\AppData\Local\Temp"
+    if exist "%user_temp%" (
+        echo Deleting files in %user_temp%...
+        rd /s /q "%user_temp%" >nul 2>&1
+    )
 )
 
 :: New Cleanup Areas
@@ -183,6 +180,10 @@ echo.
 echo Defragmenting hard disks...
 timeout /t 3 >nul
 defrag -c -v
+if %errorlevel% neq 0 (
+    echo Error during disk defragmentation.
+    goto error
+)
 cls
 echo --------------------------------------------------------------------------------
 echo Disk Defragment
@@ -195,7 +196,7 @@ goto menu
 
 :error
 cls
-echo Command not recognized.
+echo Command not recognized or an error occurred.
 timeout /t 4 >nul
 goto menu
 
