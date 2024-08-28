@@ -1,5 +1,5 @@
 @echo off
-title CleanMaster_v0.0.2
+title CleanMaster_v0.1.1
 setlocal enabledelayedexpansion
 
 :: Check for administrative privileges
@@ -11,7 +11,7 @@ if %errorlevel% neq 0 (
 )
 
 :: Set console mode and color
-mode con: cols=80 lines=20
+mode con: cols=80 lines=30
 color f0
 
 :: Logging function
@@ -22,14 +22,14 @@ exit /b
 
 :: Notification function
 :send_notification
-powershell -command "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('CleanMaster').Show(([Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier()).GetTemplateContent(0))"
+powershell -command "& {Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('%~1')}"
 exit /b
 
 :: GUI Menu
 :menu
 cls
 echo --------------------------------------------------------------------------------
-echo                              CleanMaster - Version 0.0.2
+echo                            CleanMaster - Version 0.0.2
 echo --------------------------------------------------------------------------------
 echo.
 echo Select a tool:
@@ -75,7 +75,7 @@ echo Cookies deleted.
 echo.
 echo Press any key to return to the menu...
 pause >nul
-call :send_notification
+call :send_notification "Cookies deleted successfully."
 goto menu
 
 :delete_temp_files
@@ -100,7 +100,7 @@ echo Temporary Internet Files deleted.
 echo.
 echo Press any key to return to the menu...
 pause >nul
-call :send_notification
+call :send_notification "Temporary Internet Files deleted successfully."
 goto menu
 
 :disk_cleanup
@@ -190,7 +190,7 @@ echo.
 echo Disk Cleanup successful!
 echo.
 pause
-call :send_notification
+call :send_notification "Disk Cleanup completed successfully."
 goto menu
 
 :disk_defrag
@@ -214,7 +214,7 @@ echo.
 echo Disk Defrag successful!
 echo.
 pause
-call :send_notification
+call :send_notification "Disk Defragmentation completed successfully."
 goto menu
 
 :system_backup
@@ -237,7 +237,7 @@ echo.
 echo System restore point created successfully!
 echo.
 pause
-call :send_notification
+call :send_notification "System Backup completed successfully."
 goto menu
 
 :system_health_check
@@ -260,7 +260,7 @@ echo Network Usage:
 powershell -command "Get-NetAdapterStatistics | Select-Object Name, ReceivedBytes, SentBytes"
 echo.
 pause
-call :send_notification
+call :send_notification "System Health Check completed."
 goto menu
 
 :error
