@@ -1,19 +1,35 @@
 @echo off
-title CleanMaster_v0.1.1
+title CleanMaster_v0.0.2
+setlocal enabledelayedexpansion
+
+:: Check for administrative privileges
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo Requesting administrative privileges...
     powershell -Command "Start-Process cmd -ArgumentList '/c %~s0 %*' -Verb RunAs"
     exit /b
 )
-mode con: cols=80 lines=25
-color f0
-echo This is a cleanup script.
 
+:: Set console mode and color
+mode con: cols=80 lines=20
+color f0
+
+:: Logging function
+:log_action
+set log_file=%~dp0CleanMaster.log
+echo %date% %time% - %~1 >> %log_file%
+exit /b
+
+:: Notification function
+:send_notification
+powershell -command "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('CleanMaster').Show(([Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier()).GetTemplateContent(0))"
+exit /b
+
+:: GUI Menu
 :menu
 cls
 echo --------------------------------------------------------------------------------
-echo                              CleanMaster - Version 0.1.1
+echo                              CleanMaster - Version 0.0.2
 echo --------------------------------------------------------------------------------
 echo.
 echo Select a tool:
@@ -23,24 +39,28 @@ echo [1] Delete Internet Cookies
 echo [2] Delete Temporary Internet Files
 echo [3] Disk Cleanup
 echo [4] Disk Defragment
-echo [5] Exit
+echo [5] System Backup
+echo [6] System Health Check
+echo [7] Exit
 echo.
 set /p op=Run: 
-if "%op%"=="1" goto delete_cookies
-if "%op%"=="2" goto delete_temp_files
-if "%op%"=="3" goto disk_cleanup
-if "%op%"=="4" goto disk_defrag
-if "%op%"=="5" goto exit
+if "%op%"=="1" call :log_action "Delete Internet Cookies" & goto delete_cookies
+if "%op%"=="2" call :log_action "Delete Temporary Internet Files" & goto delete_temp_files
+if "%op%"=="3" call :log_action "Disk Cleanup" & goto disk_cleanup
+if "%op%"=="4" call :log_action "Disk Defragment" & goto disk_defrag
+if "%op%"=="5" call :log_action "System Backup" & goto system_backup
+if "%op%"=="6" call :log_action "System Health Check" & goto system_health_check
+if "%op%"=="7" call :log_action "Exit" & goto exit
 goto error
 
 :delete_cookies
 cls
 echo --------------------------------------------------------------------------------
-echo                           Delete Internet Cookies
+echo Delete Internet Cookies
 echo --------------------------------------------------------------------------------
 echo.
 echo Deleting Cookies...
-ping localhost -n 2 >nul
+ping localhost -n 3 >nul
 RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 2
 if %errorlevel% neq 0 (
     echo Error deleting cookies.
@@ -48,23 +68,24 @@ if %errorlevel% neq 0 (
 )
 cls
 echo --------------------------------------------------------------------------------
-echo                           Delete Internet Cookies
+echo Delete Internet Cookies
 echo --------------------------------------------------------------------------------
 echo.
 echo Cookies deleted.
 echo.
 echo Press any key to return to the menu...
 pause >nul
+call :send_notification
 goto menu
 
 :delete_temp_files
 cls
 echo --------------------------------------------------------------------------------
-echo                       Delete Temporary Internet Files
+echo Delete Temporary Internet Files
 echo --------------------------------------------------------------------------------
 echo.
 echo Deleting Temporary Internet Files...
-ping localhost -n 2 >nul
+ping localhost -n 3 >nul
 RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 8
 if %errorlevel% neq 0 (
     echo Error deleting temporary internet files.
@@ -72,23 +93,24 @@ if %errorlevel% neq 0 (
 )
 cls
 echo --------------------------------------------------------------------------------
-echo                       Delete Temporary Internet Files
+echo Delete Temporary Internet Files
 echo --------------------------------------------------------------------------------
 echo.
 echo Temporary Internet Files deleted.
 echo.
 echo Press any key to return to the menu...
 pause >nul
+call :send_notification
 goto menu
 
 :disk_cleanup
 cls
 echo --------------------------------------------------------------------------------
-echo                               Disk Cleanup
+echo Disk Cleanup
 echo --------------------------------------------------------------------------------
 echo.
 echo Running Disk Cleanup...
-timeout /t 2 >nul
+timeout /t 3 >nul
 
 :: Cleanup actions
 echo Deleting temporary files...
@@ -162,22 +184,23 @@ if /i "%answer%"=="y" (
 
 cls
 echo --------------------------------------------------------------------------------
-echo                               Disk Cleanup
+echo Disk Cleanup
 echo --------------------------------------------------------------------------------
 echo.
 echo Disk Cleanup successful!
 echo.
 pause
+call :send_notification
 goto menu
 
 :disk_defrag
 cls
 echo --------------------------------------------------------------------------------
-echo                             Disk Defragment
+echo Disk Defragment
 echo --------------------------------------------------------------------------------
 echo.
 echo Defragmenting hard disks...
-timeout /t 2 >nul
+timeout /t 3 >nul
 defrag -c -v
 if %errorlevel% neq 0 (
     echo Error during disk defragmentation.
@@ -185,23 +208,78 @@ if %errorlevel% neq 0 (
 )
 cls
 echo --------------------------------------------------------------------------------
-echo                             Disk Defragment
+echo Disk Defragment
 echo --------------------------------------------------------------------------------
 echo.
 echo Disk Defrag successful!
 echo.
 pause
+call :send_notification
+goto menu
+
+:system_backup
+cls
+echo --------------------------------------------------------------------------------
+echo System Backup
+echo --------------------------------------------------------------------------------
+echo.
+echo Creating a system restore point...
+powershell -command "Checkpoint-Computer -Description 'CleanMaster Backup' -RestorePointType 'MODIFY_SETTINGS'"
+if %errorlevel% neq 0 (
+    echo Error creating system restore point.
+    goto error
+)
+cls
+echo --------------------------------------------------------------------------------
+echo System Backup
+echo --------------------------------------------------------------------------------
+echo.
+echo System restore point created successfully!
+echo.
+pause
+call :send_notification
+goto menu
+
+:system_health_check
+cls
+echo --------------------------------------------------------------------------------
+echo System Health Check
+echo --------------------------------------------------------------------------------
+echo.
+echo Checking system health...
+timeout /t 2 >nul
+powershell -command "Get-Process | Sort-Object CPU -Descending | Select-Object -First 10"
+echo.
+echo Memory Usage:
+powershell -command "Get-Process | Sort-Object WS -Descending | Select-Object -First 10"
+echo.
+echo Disk Usage:
+powershell -command "Get-Volume | Select-Object DriveLetter, SizeRemaining, Size"
+echo.
+echo Network Usage:
+powershell -command "Get-NetAdapterStatistics | Select-Object Name, ReceivedBytes, SentBytes"
+echo.
+pause
+call :send_notification
 goto menu
 
 :error
 cls
-echo Command not recognized or an error occurred.
-timeout /t 3 >nul
+echo --------------------------------------------------------------------------------
+echo Error
+echo --------------------------------------------------------------------------------
+echo.
+echo An error occurred. Please try again.
+echo.
+pause
 goto menu
 
 :exit
 cls
-echo Thank you for using CleanMaster by @nminhducit
-pause
-endlocal
-exit
+echo --------------------------------------------------------------------------------
+echo Exiting CleanMaster
+echo --------------------------------------------------------------------------------
+echo.
+echo Goodbye!
+timeout /t 2 >nul
+exit /b
