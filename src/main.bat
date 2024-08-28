@@ -1,23 +1,22 @@
 @echo off
-title CleanMaster_v0.1.0
+title CleanMaster_v0.1.1
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo Requesting administrative privileges...
     powershell -Command "Start-Process cmd -ArgumentList '/c %~s0 %*' -Verb RunAs"
     exit /b
 )
-mode con: cols=80 lines=20
+mode con: cols=80 lines=25
 color f0
-@echo off
 echo This is a cleanup script.
 
 :menu
 cls
 echo --------------------------------------------------------------------------------
-echo                            CleanMaster - Version 0.1.0
+echo                              CleanMaster - Version 0.1.1
 echo --------------------------------------------------------------------------------
 echo.
-echo Select a tool
+echo Select a tool:
 echo =============
 echo.
 echo [1] Delete Internet Cookies
@@ -37,11 +36,11 @@ goto error
 :delete_cookies
 cls
 echo --------------------------------------------------------------------------------
-echo Delete Internet Cookies
+echo                           Delete Internet Cookies
 echo --------------------------------------------------------------------------------
 echo.
 echo Deleting Cookies...
-ping localhost -n 3 >nul
+ping localhost -n 2 >nul
 RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 2
 if %errorlevel% neq 0 (
     echo Error deleting cookies.
@@ -49,23 +48,23 @@ if %errorlevel% neq 0 (
 )
 cls
 echo --------------------------------------------------------------------------------
-echo Delete Internet Cookies
+echo                           Delete Internet Cookies
 echo --------------------------------------------------------------------------------
 echo.
 echo Cookies deleted.
 echo.
-echo Press any key to return to the menu. . .
+echo Press any key to return to the menu...
 pause >nul
 goto menu
 
 :delete_temp_files
 cls
 echo --------------------------------------------------------------------------------
-echo Delete Temporary Internet Files
+echo                       Delete Temporary Internet Files
 echo --------------------------------------------------------------------------------
 echo.
 echo Deleting Temporary Internet Files...
-ping localhost -n 3 >nul
+ping localhost -n 2 >nul
 RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 8
 if %errorlevel% neq 0 (
     echo Error deleting temporary internet files.
@@ -73,23 +72,23 @@ if %errorlevel% neq 0 (
 )
 cls
 echo --------------------------------------------------------------------------------
-echo Delete Temporary Internet Files
+echo                       Delete Temporary Internet Files
 echo --------------------------------------------------------------------------------
 echo.
 echo Temporary Internet Files deleted.
 echo.
-echo Press any key to return to the menu. . .
+echo Press any key to return to the menu...
 pause >nul
 goto menu
 
 :disk_cleanup
 cls
 echo --------------------------------------------------------------------------------
-echo Disk Cleanup
+echo                               Disk Cleanup
 echo --------------------------------------------------------------------------------
 echo.
 echo Running Disk Cleanup...
-timeout /t 3 >nul
+timeout /t 2 >nul
 
 :: Cleanup actions
 echo Deleting temporary files...
@@ -163,7 +162,7 @@ if /i "%answer%"=="y" (
 
 cls
 echo --------------------------------------------------------------------------------
-echo Disk Cleanup
+echo                               Disk Cleanup
 echo --------------------------------------------------------------------------------
 echo.
 echo Disk Cleanup successful!
@@ -174,11 +173,11 @@ goto menu
 :disk_defrag
 cls
 echo --------------------------------------------------------------------------------
-echo Disk Defragment
+echo                             Disk Defragment
 echo --------------------------------------------------------------------------------
 echo.
 echo Defragmenting hard disks...
-timeout /t 3 >nul
+timeout /t 2 >nul
 defrag -c -v
 if %errorlevel% neq 0 (
     echo Error during disk defragmentation.
@@ -186,7 +185,7 @@ if %errorlevel% neq 0 (
 )
 cls
 echo --------------------------------------------------------------------------------
-echo Disk Defragment
+echo                             Disk Defragment
 echo --------------------------------------------------------------------------------
 echo.
 echo Disk Defrag successful!
@@ -197,12 +196,12 @@ goto menu
 :error
 cls
 echo Command not recognized or an error occurred.
-timeout /t 4 >nul
+timeout /t 3 >nul
 goto menu
 
 :exit
 cls
-echo Thanks for using CleanMaster by @nminhducit
+echo Thank you for using CleanMaster by @nminhducit
 pause
 endlocal
 exit
